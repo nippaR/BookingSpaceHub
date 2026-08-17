@@ -1,26 +1,128 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ---------------------------------------------------------------------------
+   CWMS design tokens
+   Exposed to Tailwind via @theme, so they are usable as utilities
+   (e.g. `bg-cream`, `text-ink-soft`, `px-gutter`, `text-h2`).
+--------------------------------------------------------------------------- */
+@theme {
+  /* Type */
+  --font-sans: var(--font-manrope), Helvetica, Arial, sans-serif;
+  --font-heading: var(--font-poppins), Helvetica, Arial, sans-serif;
+  --font-mono: var(--font-dm-mono), monospace;
+
+  --text-eyebrow: 11px;
+  --text-eyebrow--letter-spacing: 0.1em;
+  --text-hero: clamp(38px, 5vw, 60px);
+  --text-h2: clamp(28px, 3.2vw, 40px);
+  --text-h2-sm: clamp(26px, 3vw, 36px);
+  --text-h2-lg: clamp(28px, 3.4vw, 42px);
+
+  /* Ink */
+  --color-ink: #1b1813;
+  --color-ink-soft: #57514a;
+  --color-muted: #8b837a;
+  --color-faint: #a79e92;
+
+  /* Gold */
+  --color-gold: #af8b56;
+  --color-gold-hover: #c79f63;
+  --color-gold-light: #dfc38c;
+  --color-gold-pale: #ebd6ae;
+  --color-bronze: #7a5c31;
+  --color-bronze-hover: #8a6a41;
+
+  /* Surfaces */
+  --color-cream: #fbfaf7;
+  --color-cream-warm: #fffbf4;
+  --color-cream-deep: #fbf3e6;
+  --color-sand: #f7f4ee;
+  --color-sand-deep: #f0ece3;
+
+  /* Lines */
+  --color-line: #efebe3;
+  --color-line-strong: #ede8e0;
+  --color-line-bold: #ded7ca;
+  --color-line-gold: #eadfcc;
+
+  /* Rhythm — every section shares the same fluid gutter + vertical scale */
+  --spacing-gutter: clamp(20px, 4vw, 56px);
+  --spacing-section: clamp(50px, 6vw, 84px);
+  --spacing-section-sm: clamp(30px, 4vw, 50px);
+  --spacing-section-lg: clamp(50px, 6vw, 90px);
+  --spacing-hero-top: clamp(48px, 7vw, 96px);
+  --spacing-split-gap: clamp(32px, 5vw, 64px);
+  --spacing-heading-gap: clamp(28px, 3.4vw, 40px);
+
+  --shadow-mockup: 0 30px 70px rgb(27 24 19 / 0.14);
+  --shadow-header: 0 6px 20px rgb(27 24 19 / 0.06);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    background: #ffffff;
+    color: var(--color-ink);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Keep in-page anchors clear of the sticky header. */
+  section[id] {
+    scroll-margin-top: 96px;
+  }
+
+  /* Keyboard focus stays visible on the dark and gold panels too. */
+  :focus-visible {
+    outline: 2px solid var(--color-bronze);
+    outline-offset: 3px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ---------------------------------------------------------------------------
+   Scroll reveal
+   The animation is driven entirely by CSS so that the client component only
+   has to flip one attribute. Users without JS or with reduced-motion turned
+   on get the fully composed page with no animation at all.
+--------------------------------------------------------------------------- */
+@layer components {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1),
+      transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  [data-reveal="shown"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
