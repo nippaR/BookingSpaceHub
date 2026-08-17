@@ -1,25 +1,17 @@
-import type { Metadata } from "next";
-import { DM_Mono, Manrope, Poppins } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Manrope } from "next/font/google";
 import "./globals.css";
 
+/**
+ * One family, not three. Manrope is variable across 200–800, so the whole
+ * hierarchy — eyebrow through display — comes out of a single request, and
+ * emphasis can be built from weight rather than from a second typeface.
+ */
 const manrope = Manrope({
   variable: "--font-manrope",
   subsets: ["latin"],
   display: "swap",
-});
-
-const poppins = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const dmMono = DM_Mono({
-  variable: "--font-dm-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  display: "swap",
+  adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {
@@ -29,21 +21,27 @@ export const metadata: Metadata = {
     template: "%s | CWMS",
   },
   description:
-    "Members, bookings and billing in one platform — multi-tenant coworking management software for workspace operators.",
+    "Members, bookings and billing on one tenant record — multi-tenant coworking management software for workspace operators.",
   openGraph: {
     type: "website",
     siteName: "CWMS",
     title: "CWMS — Run and grow your coworking space",
     description:
-      "Members, bookings and billing in one platform — built for multi-tenant operators.",
+      "Members, bookings and billing on one tenant record — built for multi-tenant operators.",
     url: "/",
   },
   twitter: {
     card: "summary_large_image",
     title: "CWMS — Run and grow your coworking space",
     description:
-      "Members, bookings and billing in one platform — built for multi-tenant operators.",
+      "Members, bookings and billing on one tenant record — built for multi-tenant operators.",
   },
+};
+
+export const viewport: Viewport = {
+  // Light-only page, so this is a single fixed value — no media-query pair
+  // and nothing at runtime keeping it in sync.
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -51,15 +49,24 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${manrope.variable} ${poppins.variable} ${dmMono.variable} h-full antialiased`}
+      className={`${manrope.variable} h-full antialiased`}
     >
       <head>
-        {/* Without JS the reveal animation never runs, so show everything. */}
+        {/* Reveal is a progressive enhancement; without JS it never runs, so
+            everything below the fold must still be visible. */}
         <noscript>
           <style>{`[data-reveal]{opacity:1!important;transform:none!important}`}</style>
         </noscript>
       </head>
-      <body className="min-h-full font-sans">{children}</body>
+      <body className="min-h-full font-sans">
+        <a
+          href="#main"
+          className="pressable sr-only rounded-full bg-surface-inverse px-5 py-3 text-sm font-semibold text-ink-inverse focus-visible:not-sr-only focus-visible:fixed focus-visible:top-4 focus-visible:left-4 focus-visible:z-50"
+        >
+          Skip to content
+        </a>
+        {children}
+      </body>
     </html>
   );
 }

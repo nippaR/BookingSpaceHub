@@ -2,10 +2,9 @@ import scaleShot from "@/assets/screenshots/dark-final.png";
 import automationShot from "@/assets/screenshots/wf-table.png";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { Demo } from "@/components/sections/demo";
 import { Faq } from "@/components/sections/faq";
-import { FinalCta } from "@/components/sections/final-cta";
 import { Hero } from "@/components/sections/hero";
-import { LogoStrip } from "@/components/sections/logo-strip";
 import { MobileApp } from "@/components/sections/mobile-app";
 import { ModuleGrid } from "@/components/sections/module-grid";
 import { Security } from "@/components/sections/security";
@@ -18,29 +17,29 @@ export default function Home() {
   return (
     <>
       <SiteHeader />
-      <main>
+      <main id="main">
         <Hero />
         <StatStrip />
-        <LogoStrip />
 
         <SplitFeature
-          id="modules"
-          className="bg-cream"
+          id="platform"
           eyebrow="Automate operations"
           heading="Handle the day-to-day automatically"
+          body="The work that fills a front desk — charging, booking, onboarding — runs off the tenant record instead of a person's memory."
           points={automationPoints}
           image={automationShot}
-          imageAlt="CWMS agreements module listing tenant agreements and their status"
+          imageAlt="CWMS agreements module listing tenant agreements with pending signature and review counts"
         />
 
         <SplitFeature
           imageFirst
-          darkChrome
+          className="bg-surface-2"
           eyebrow="Built to scale"
           heading="One system across every location"
+          body="Add a site without adding a system. Each tenant keeps its own rules while your team works from a single login."
           points={scalePoints}
           image={scaleShot}
-          imageAlt="CWMS multi-tenant dashboard in dark mode"
+          imageAlt="CWMS multi-tenant dashboard in dark mode showing occupancy and bookings across sites"
         />
 
         <ModuleGrid />
@@ -48,7 +47,7 @@ export default function Home() {
         <Security />
         <MobileApp />
         <Faq />
-        <FinalCta />
+        <Demo />
       </main>
       <SiteFooter />
     </>

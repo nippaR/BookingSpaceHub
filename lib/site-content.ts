@@ -1,8 +1,7 @@
 import type { ComponentType, SVGProps } from "react";
 
 import {
-  AuditDarkIcon,
-  AuditGoldIcon,
+  AuditIcon,
   BillingIcon,
   BoardroomIcon,
   DocumentsIcon,
@@ -11,8 +10,6 @@ import {
   IsolationIcon,
   PassesIcon,
   RolesIcon,
-  SelfServeIcon,
-  UnifyIcon,
 } from "@/components/icons";
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>;
@@ -25,23 +22,29 @@ export type Feature = {
 
 export const site = {
   name: "CWMS",
-  appUrl: "https://app.cwms.io",
+  appUrl: "https://cwms.bookingspacehub.com/",
   salesEmail: "sales@cwms.io",
   phone: { display: "+971 4 000 0000", href: "tel:+97140000000" },
   location: "Dubai, UAE",
 } as const;
 
 export const navLinks = [
-  { label: "Features", href: "#modules" },
-  { label: "Mobile App", href: "#mobile" },
-  { label: "Security", href: "#security" },
+  { label: "Platform", href: "#platform" },
+  { label: "Modules", href: "#modules" },
+  { label: "Trust", href: "#trust" },
+  { label: "Mobile app", href: "#mobile" },
   { label: "FAQ", href: "#faq" },
 ] as const;
 
+/**
+ * Product facts, not invented outcome metrics — each one is something the
+ * rest of the page already commits to, so nothing here is unfalsifiable.
+ */
 export const stats = [
-  { value: "9", label: "Modules, one platform" },
-  { value: "∞", label: "Tenants, isolated data" },
-  { value: "100%", label: "Actions audit-logged" },
+  { value: "9", label: "Modules on one tenant record" },
+  { value: "2–4", unit: "wks", label: "Typical time to go live" },
+  { value: "100", unit: "%", label: "Actions written to the audit log" },
+  { value: "24/7", label: "Member self-service, no front desk" },
 ] as const;
 
 export const automationPoints = [
@@ -78,55 +81,57 @@ export const modules: Feature[] = [
   {
     icon: BoardroomIcon,
     title: "Boardroom Booking",
-    description: "Public links included",
+    description: "Branded public booking links included.",
   },
   {
     icon: PassesIcon,
     title: "Day Passes & Visitors",
-    description: "Passes and access cards",
+    description: "Passes issued and access cards tracked.",
   },
   {
     icon: HelpdeskIcon,
     title: "Helpdesk",
-    description: "Tickets, owners, status",
+    description: "Tickets with owners, status and history.",
   },
   {
     icon: DocumentsIcon,
     title: "Documents",
-    description: "Templates & e-signatures",
+    description: "Templates and e-signatures on file.",
   },
   {
     icon: InventoryIcon,
     title: "Inventory",
-    description: "Item master & stock transfer",
+    description: "Item master and stock transfer between sites.",
   },
   {
     icon: BillingIcon,
     title: "Billing & Invoicing",
-    description: "Recurring & one-off charges",
+    description: "Recurring plans and one-off charges.",
   },
 ];
 
-export const differentiators: Feature[] = [
+/**
+ * The three arguments, in the order an operator evaluates them. Numbered
+ * rather than iconified — this section carries the reasoning, so it gets a
+ * different visual form from the module list.
+ */
+export const differentiators = [
   {
-    icon: UnifyIcon,
     title: "One tenant model",
     description:
-      "Every module — members, rooms, billing, tickets — reads from the same tenant record.",
+      "Members, rooms, billing and tickets all read from the same tenant record — so there is no reconciliation step and no second source of truth.",
   },
   {
-    icon: SelfServeIcon,
     title: "Members serve themselves",
     description:
-      "Booking, passes and tickets move off your front desk and into the portal and app.",
+      "Booking, passes and tickets move off your front desk and into the portal and app, which is where most of the daily volume actually lives.",
   },
   {
-    icon: AuditGoldIcon,
     title: "Answerable by design",
     description:
-      "Roles, permissions and an audit log behind every change, for every tenant.",
+      "Roles, permissions and an audit log sit behind every change, for every tenant — so you can answer a question about last month without guessing.",
   },
-];
+] as const;
 
 export const securityPillars: Feature[] = [
   {
@@ -140,7 +145,7 @@ export const securityPillars: Feature[] = [
     description: "Each team member sees only what their role needs.",
   },
   {
-    icon: AuditDarkIcon,
+    icon: AuditIcon,
     title: "Audit trail",
     description: "Every change logged with actor and timestamp.",
   },
@@ -183,16 +188,17 @@ export const footerColumns = [
   {
     title: "Platform",
     links: [
-      { label: "Features", href: "#modules" },
+      { label: "How it works", href: "#platform" },
+      { label: "Modules", href: "#modules" },
       { label: "Mobile app", href: "#mobile" },
-      { label: "Security", href: "#security" },
+      { label: "Trust & security", href: "#trust" },
     ],
   },
   {
-    title: "Resources",
+    title: "Company",
     links: [
       { label: "FAQ", href: "#faq" },
-      { label: "Contact sales", href: "#contact" },
+      { label: "Book a demo", href: "#demo" },
       { label: "Tenant login", href: site.appUrl },
     ],
   },

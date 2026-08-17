@@ -1,128 +1,517 @@
 @import "tailwindcss";
 
-/* ---------------------------------------------------------------------------
+/* ===========================================================================
    CWMS design tokens
-   Exposed to Tailwind via @theme, so they are usable as utilities
-   (e.g. `bg-cream`, `text-ink-soft`, `px-gutter`, `text-h2`).
---------------------------------------------------------------------------- */
+
+   Two layers:
+   1. `@theme` — the static scale (type, spacing, radii, easing).
+   2. `:root` — the semantic *colour* layer. Every colour utility resolves
+      through a `--c-*` variable, so a surface can be re-toned in one place.
+
+   This is a light-only page. There is deliberately no dark palette, no
+   `prefers-color-scheme` handling and no theme toggle.
+
+   Colour direction: gold (#AF8B56) is identity — the wordmark, the floating
+   nav bar and accents. Dark ink is the action colour, because gold is only
+   3.2:1 on white and cannot legibly carry small text or button labels.
+=========================================================================== */
+
 @theme {
-  /* Type */
-  --font-sans: var(--font-manrope), Helvetica, Arial, sans-serif;
-  --font-heading: var(--font-poppins), Helvetica, Arial, sans-serif;
-  --font-mono: var(--font-dm-mono), monospace;
+  /* --- Type -------------------------------------------------------------
+     One family. Hierarchy comes from weight + size + leading as a set.
+     Tracking is size-specific: large text tightens, small text opens up. */
+  --font-sans:
+    var(--font-manrope), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
 
-  --text-eyebrow: 11px;
-  --text-eyebrow--letter-spacing: 0.1em;
-  --text-hero: clamp(38px, 5vw, 60px);
-  --text-h2: clamp(28px, 3.2vw, 40px);
-  --text-h2-sm: clamp(26px, 3vw, 36px);
-  --text-h2-lg: clamp(28px, 3.4vw, 42px);
+  /* 36px → 60px. Tracking and leading are eased back from -0.035em/1.03 to
+     match: both are size-specific, and values tuned for a 76px headline read
+     as cramped once the same text is set 16px smaller. */
+  --text-display: clamp(2.25rem, 1.62rem + 2.8vw, 3.75rem);
+  --text-display--line-height: 1.08;
+  --text-display--letter-spacing: -0.028em;
+  --text-display--font-weight: 800;
 
-  /* Ink */
-  --color-ink: #1b1813;
-  --color-ink-soft: #57514a;
-  --color-muted: #8b837a;
-  --color-faint: #a79e92;
+  --text-h2: clamp(1.875rem, 1.35rem + 2.3vw, 3rem);
+  --text-h2--line-height: 1.08;
+  --text-h2--letter-spacing: -0.026em;
+  --text-h2--font-weight: 800;
 
-  /* Gold */
-  --color-gold: #af8b56;
-  --color-gold-hover: #c79f63;
-  --color-gold-light: #dfc38c;
-  --color-gold-pale: #ebd6ae;
-  --color-bronze: #7a5c31;
-  --color-bronze-hover: #8a6a41;
+  --text-h3: clamp(1.1875rem, 1.09rem + 0.42vw, 1.4375rem);
+  --text-h3--line-height: 1.22;
+  --text-h3--letter-spacing: -0.014em;
+  --text-h3--font-weight: 700;
+
+  --text-lead: clamp(1.0625rem, 0.98rem + 0.38vw, 1.3125rem);
+  --text-lead--line-height: 1.55;
+  --text-lead--letter-spacing: -0.009em;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.65;
+  --text-body--letter-spacing: 0em;
+
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.6;
+  --text-sm--letter-spacing: 0.002em;
+
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.5;
+  --text-xs--letter-spacing: 0.008em;
+
+  /* Small caps label. Positive tracking because it is small AND uppercase. */
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1;
+  --text-eyebrow--letter-spacing: 0.09em;
+  --text-eyebrow--font-weight: 600;
+
+  /* --- Rhythm -----------------------------------------------------------
+     rem-based so the whole layout scales with the user's text-size setting,
+     with a vw term so it still breathes on wide screens. */
+  --spacing-gutter: clamp(1.25rem, 0.85rem + 2vw, 3rem);
+  --spacing-section: clamp(4.5rem, 3.2rem + 5.5vw, 9rem);
+  --spacing-section-sm: clamp(3rem, 2.3rem + 3vw, 5.5rem);
+  --spacing-stack: clamp(1.75rem, 1.4rem + 1.6vw, 3rem);
+
+  /* One page width, used by the header, every section and the footer, so
+     everything shares a single left and right edge. */
+  --container-page: 78rem; /* 1248px */
+  /* Overrides Tailwind's 65ch default: a measure in rem holds its width when
+     the type scale changes, where a ch-based one silently drifts. */
+  --container-prose: 46rem; /* 736px */
+
+  --radius-card: 1.25rem;
+  --radius-panel: 1.75rem;
+  --radius-frame: 1rem;
+
+  /* --- Motion -----------------------------------------------------------
+     `--ease-spring` approximates a critically damped settle for the small
+     number of places where a CSS transition is genuinely enough (colour,
+     opacity). Anything the user can grab uses the real solver in
+     lib/spring.ts instead — a CSS transition cannot be interrupted cleanly. */
+  --ease-spring: cubic-bezier(0.32, 0.72, 0.24, 1);
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ===========================================================================
+   Semantic colour layer
+=========================================================================== */
+
+/* `color-scheme: light` is pinned rather than left to the OS: it keeps form
+   controls, scrollbars and the native select popup light to match the page,
+   which they would not do on a machine set to dark. */
+:root {
+  color-scheme: light;
+
+  /* Brand — gold. Note `--c-on-brand` is a dark ink, not white: white on
+     #AF8B56 measures 3.2:1 and fails, where the dark ink clears 5.9:1. */
+  --c-brand: #af8b56;
+  /* Body-size safe: 6.2:1 on white. Gold itself is only 3.2:1 there, so it
+     may carry graphics and large display text but never small text — that is
+     what this tone is for. */
+  --c-brand-strong: #7a5c31;
+  --c-brand-soft: #f9f4ea;
+  --c-brand-line: #eadfcc;
+  --c-on-brand: #17140f;
+
+  /* --- Nav bar ---------------------------------------------------------
+     Frosted glass. The alpha is what makes it glass: content passing
+     underneath is blurred and tinted rather than hidden, which is the whole
+     effect. At alpha 1 the backdrop-filter has nothing to act on and the bar
+     is simply a white pill — set `--c-nav` to `#ffffff` for that.
+     0.92 is high enough to read as solid at a glance while still frosting. */
+  --c-nav: rgb(255 255 255 / 0.92);
+  /* Near-black on white is 18.7:1 — no contrast constraint on this bar now. */
+  --c-on-nav: #17140f;
+
+  /* Text — every tone below clears 4.5:1 on `--c-surface`. Warm-neutral, so
+     the greys sit under a gold brand without reading as a colour clash. */
+  --c-ink: #17140f;
+  --c-ink-2: #47413a;
+  --c-ink-3: #6b6259; /* lightest tone allowed for text */
 
   /* Surfaces */
-  --color-cream: #fbfaf7;
-  --color-cream-warm: #fffbf4;
-  --color-cream-deep: #fbf3e6;
-  --color-sand: #f7f4ee;
-  --color-sand-deep: #f0ece3;
+  --c-surface: #ffffff;
+  --c-surface-2: #faf8f4;
+  --c-surface-3: #f2eee7;
 
-  /* Lines */
-  --color-line: #efebe3;
-  --color-line-strong: #ede8e0;
-  --color-line-bold: #ded7ca;
-  --color-line-gold: #eadfcc;
+  /* The page's opposite: primary buttons and the skip link. */
+  --c-surface-inverse: #17140f;
+  --c-ink-inverse: #f2efe9;
 
-  /* Rhythm — every section shares the same fluid gutter + vertical scale */
-  --spacing-gutter: clamp(20px, 4vw, 56px);
-  --spacing-section: clamp(50px, 6vw, 84px);
-  --spacing-section-sm: clamp(30px, 4vw, 50px);
-  --spacing-section-lg: clamp(50px, 6vw, 90px);
-  --spacing-hero-top: clamp(48px, 7vw, 96px);
-  --spacing-split-gap: clamp(32px, 5vw, 64px);
-  --spacing-heading-gap: clamp(28px, 3.4vw, 40px);
+  /* The demo panel — the page's one high-contrast surface, styled
+     white-on-dark throughout. */
+  --c-panel: #17140f;
+  --c-on-panel: #f2efe9;
 
-  --shadow-mockup: 0 30px 70px rgb(27 24 19 / 0.14);
-  --shadow-header: 0 6px 20px rgb(27 24 19 / 0.06);
+  /* Lines — decoration only, never text */
+  --c-line: #e9e4db;
+  --c-line-strong: #d9d2c6;
+
+  /* Feedback */
+  --c-danger: #b42318;
+  --c-danger-soft: #fef3f2;
+
+  /* Materials — translucent chrome. Content scrolls underneath these. */
+  --c-material: rgb(255 255 255 / 0.72);
+  --c-material-edge: rgb(255 255 255 / 0.6);
+  /* The pane's own outline — darker than the rim highlight, so the glass has
+     a defined boundary against a pale page rather than dissolving into it. */
+  --c-glass-edge: rgb(23 20 15 / 0.08);
+  --c-scrim: rgb(23 20 15 / 0.28);
+
+  /* Elevation. Larger surfaces read as thicker: more blur, deeper shadow. */
+  --shadow-tint-near: rgb(23 20 15 / 0.05);
+  --shadow-tint-mid: rgb(23 20 15 / 0.04);
+  --shadow-tint-far: rgb(23 20 15 / 0.13);
+  --shadow-tint-deep: rgb(23 20 15 / 0.22);
+  /* Neutral lift for the floating nav bar. Previously gold-tinted, which
+     read as a colour cast now that the bar itself is white. */
+  --shadow-nav: 0 1px 2px rgb(23 20 15 / 0.06), 0 6px 20px rgb(23 20 15 / 0.08);
+  --shadow-nav-lifted: 0 2px 4px rgb(23 20 15 / 0.08),
+    0 12px 34px rgb(23 20 15 / 0.14);
+
+  --shadow-raised: 0 1px 2px var(--shadow-tint-near),
+    0 4px 12px var(--shadow-tint-mid);
+  --shadow-frame: 0 2px 6px var(--shadow-tint-near),
+    0 24px 60px var(--shadow-tint-far);
+  --shadow-sheet: 0 1px 3px var(--shadow-tint-near),
+    0 32px 64px var(--shadow-tint-deep);
 }
+
+
+/* Expose the semantic layer to Tailwind's colour utilities. */
+@theme inline {
+  --color-brand: var(--c-brand);
+  --color-brand-strong: var(--c-brand-strong);
+  --color-brand-soft: var(--c-brand-soft);
+  --color-brand-line: var(--c-brand-line);
+  --color-on-brand: var(--c-on-brand);
+  --color-on-nav: var(--c-on-nav);
+
+  --color-ink: var(--c-ink);
+  --color-ink-2: var(--c-ink-2);
+  --color-ink-3: var(--c-ink-3);
+
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-surface-3: var(--c-surface-3);
+  --color-surface-inverse: var(--c-surface-inverse);
+  --color-ink-inverse: var(--c-ink-inverse);
+  --color-panel: var(--c-panel);
+  --color-on-panel: var(--c-on-panel);
+
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+
+  --color-danger: var(--c-danger);
+  --color-danger-soft: var(--c-danger-soft);
+
+  --shadow-raised: var(--shadow-raised);
+  --shadow-frame: var(--shadow-frame);
+  --shadow-sheet: var(--shadow-sheet);
+}
+
+/* ===========================================================================
+   Base
+=========================================================================== */
 
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* The nav floats, so an anchor has to clear the bar *and* the gap above
+       it. Derived in one place so the header, the FAQ's sticky column and
+       every in-page anchor can never drift apart. */
+    --header-h: 3.5rem;
+    --header-gap: 0.75rem;
+    --header-total: calc(var(--header-h) + var(--header-gap));
+    scroll-padding-top: calc(var(--header-total) + 1.5rem);
   }
 
   body {
-    background: #ffffff;
-    color: var(--color-ink);
+    background: var(--c-surface);
+    color: var(--c-ink);
+    font-synthesis-weight: none;
+    -webkit-tap-highlight-color: transparent;
+    /* Ease the light<->dark swap instead of jumping brightness. */
+    transition:
+      background-color 0.4s var(--ease-out-soft),
+      color 0.4s var(--ease-out-soft);
   }
 
   h1,
   h2,
-  h3 {
-    font-family: var(--font-heading);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+  h3,
+  h4 {
+    /* Tracking and leading now travel with each size token, so nothing is
+       set globally here — a single letter-spacing would be wrong somewhere. */
+    text-wrap: balance;
   }
 
   p {
     text-wrap: pretty;
   }
 
-  /* Keep in-page anchors clear of the sticky header. */
-  section[id] {
-    scroll-margin-top: 96px;
+  :focus-visible {
+    outline: 2px solid var(--c-brand-strong);
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 
-  /* Keyboard focus stays visible on the dark and gold panels too. */
-  :focus-visible {
-    outline: 2px solid var(--color-bronze);
-    outline-offset: 3px;
+  /* Only suppress the ring for genuine pointer input. */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  ::selection {
+    background: var(--c-brand);
+    color: var(--c-on-brand);
   }
 }
 
-/* ---------------------------------------------------------------------------
-   Scroll reveal
-   The animation is driven entirely by CSS so that the client component only
-   has to flip one attribute. Users without JS or with reduced-motion turned
-   on get the fully composed page with no animation at all.
---------------------------------------------------------------------------- */
+/* ===========================================================================
+   Components
+=========================================================================== */
+
 @layer components {
+  /* --- Press feedback --------------------------------------------------
+     Fires on pointer-down, not on click, and is short enough that it reads
+     as a material response rather than an animation. Every interactive
+     surface on the page opts in via `.pressable`. */
+  .pressable,
+  .pressable-subtle {
+    transition:
+      transform 0.14s var(--ease-spring),
+      background-color 0.18s var(--ease-out-soft),
+      border-color 0.18s var(--ease-out-soft),
+      color 0.18s var(--ease-out-soft),
+      box-shadow 0.18s var(--ease-out-soft);
+    touch-action: manipulation;
+  }
+
+  .pressable:active {
+    transform: scale(0.972);
+    transition-duration: 0.1s;
+  }
+
+  .pressable-subtle:active {
+    transform: scale(0.99);
+    transition-duration: 0.1s;
+  }
+
+  /* --- Translucent chrome ---------------------------------------------- */
+  .material {
+    background: var(--c-material);
+    backdrop-filter: blur(20px) saturate(180%);
+  }
+
+  /* Bigger surfaces read as thicker. */
+  .material-thick {
+    background: var(--c-material);
+    backdrop-filter: blur(32px) saturate(180%);
+  }
+
+  /* --- Floating nav ----------------------------------------------------
+     Translucent gold rather than flat gold: the bar still reads as a
+     material with the page moving underneath it, which a solid fill would
+     lose. 0.9 alpha is the floor that keeps the dark ink on it above 4.5:1
+     over both the light and the dark page ground. */
+  .material-nav {
+    background: var(--c-nav);
+    /* Saturation above 100% is what stops blurred colour behind the glass
+       going muddy grey — it is the difference between frosted glass and a
+       sheet of tracing paper. */
+    backdrop-filter: blur(24px) saturate(180%);
+    /* A hairline edge plus a brighter top rim: light catching the lip of a
+       real pane. Inset, so it does not add to the bar's footprint. */
+    box-shadow:
+      var(--shadow-nav),
+      inset 0 1px 0 0 var(--c-material-edge),
+      inset 0 0 0 1px var(--c-glass-edge);
+    transition:
+      box-shadow 0.35s var(--ease-out-soft),
+      background-color 0.35s var(--ease-out-soft);
+  }
+
+  /* Once content is passing underneath, the bar lifts further off the page
+     instead of growing a hard divider. */
+  .material-nav[data-scrolled="true"] {
+    box-shadow: var(--shadow-nav-lifted);
+  }
+
+  /* --- Scroll reveal ---------------------------------------------------
+     Below-the-fold only. Above-the-fold content renders immediately so it
+     never blocks LCP or depends on JS to become visible. */
+  /* No `will-change` here on purpose: there are ~30 of these on the page and
+     promoting them all up front costs more than it saves. Transform and
+     opacity are promoted by the compositor for the duration of the
+     transition anyway.
+
+     `--reveal-y` is the travel, and the observer flips its sign to whichever
+     edge the element left by. Something that exits through the top has to
+     keep moving up; sending it back down to a fixed +1.5rem would push it
+     against the scroll and read as the page fighting the user.
+
+     A transition is legitimate here in a way it is not for a gesture: this
+     motion is driven by scroll position, not by something the user is
+     holding, so there is nothing to interrupt or hand velocity to. */
   [data-reveal] {
     opacity: 0;
-    transform: translateY(26px);
+    transform: translate3d(0, var(--reveal-y, 1.5rem), 0);
+    /* Exits are quicker than entrances and never staggered — a delayed exit
+       reads as the interface lagging behind the scroll. */
     transition:
-      opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1),
-      transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
-    transition-delay: var(--reveal-delay, 0ms);
+      opacity 0.4s var(--ease-out-soft),
+      transform 0.4s var(--ease-out-soft);
+    transition-delay: 0ms;
   }
 
   [data-reveal="shown"] {
     opacity: 1;
     transform: none;
+    transition:
+      opacity 0.62s var(--ease-spring),
+      transform 0.62s var(--ease-spring);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  /* --- Hero entrance ---------------------------------------------------
+     Pure CSS, running on load. The hero cannot use <Reveal>: that starts at
+     `opacity: 0` and waits for an IntersectionObserver to run, so the page's
+     most important content would depend on hydration to become visible.
+     `backwards` fill holds the start frame through the stagger delay. */
+  .hero-in {
+    animation: hero-rise 0.7s var(--ease-spring) backwards;
+    animation-delay: var(--hero-delay, 0ms);
+  }
+
+  /* Transform-only, for the hero mockup. That image is the largest element on
+     the page and almost certainly what LCP measures — and a element at
+     `opacity: 0` is not counted as painted, so fading it in would push LCP out
+     by the full length of the animation. Moving it without fading keeps the
+     entrance and costs nothing. */
+  .hero-in-opaque {
+    animation: hero-lift 0.9s var(--ease-spring) backwards;
+    animation-delay: var(--hero-delay, 0ms);
+  }
+
+  /* --- Disclosure ------------------------------------------------------
+     Native <details> animation where supported; a plain toggle elsewhere. */
+  .disclosure::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size 0.36s var(--ease-spring),
+      content-visibility 0.36s allow-discrete;
+  }
+
+  .disclosure[open]::details-content {
+    block-size: auto;
   }
 }
 
+/* Declared outside the cascade layer so the names resolve regardless of
+   layer ordering. Only the `from` frame is given: the `to` state is whatever
+   the element already computes to, so these compose with any layout. */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.25rem, 0);
+  }
+}
+
+@keyframes hero-lift {
+  from {
+    transform: translate3d(0, 2rem, 0) scale(0.985);
+  }
+}
+
+@supports (interpolate-size: allow-keywords) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+}
+
+/* ===========================================================================
+   Accessibility preferences
+=========================================================================== */
+
+/* Reduced motion is not "no feedback" — it is a gentler, non-vestibular
+   equivalent. Opacity and colour changes stay; travel and overshoot go. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.16s !important;
   }
 
   [data-reveal] {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+
+  .pressable:active,
+  .pressable-subtle:active {
+    transform: none;
+    background-color: var(--c-surface-3);
+  }
+
+  .disclosure::details-content {
+    transition: none;
+  }
+
+  /* The sheet's spring is bypassed under reduced motion, so its opacity is
+     set as a step change. A CSS transition on the element turns that step
+     into the gentle cross-fade the preference actually asks for — reduced
+     motion means less vestibular travel, not an absence of feedback. */
+  [data-sheet],
+  [data-scrim] {
+    transition: opacity 0.2s var(--ease-out-soft) !important;
+  }
+}
+
+/* Frostier, not clearer: raise opacity and drop the blur. */
+@media (prefers-reduced-transparency: reduce) {
+  .material,
+  .material-thick {
+    background: var(--c-surface);
+    backdrop-filter: none;
+  }
+
+  /* Frostier, not clearer: the glass goes solid but keeps its edge so the
+     bar still reads as a distinct floating object. */
+  .material-nav {
+    background: var(--c-surface);
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --c-ink-2: #26211a;
+    --c-ink-3: #3a342b;
+    --c-line: #a49a8c;
+    --c-line-strong: #7d7264;
+    --c-material: var(--c-surface);
+    /* Translucency costs contrast whatever is behind it — go fully solid. */
+    --c-nav: var(--c-surface);
+  }
+
+  .material-nav {
+    background: var(--c-nav);
+    backdrop-filter: none;
+    outline: 1px solid var(--c-on-nav);
+  }
+
+  .material,
+  .material-thick {
+    backdrop-filter: none;
+    border-bottom: 1px solid var(--c-line-strong);
   }
 }

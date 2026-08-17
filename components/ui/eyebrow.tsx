@@ -1,21 +1,32 @@
 import type { ReactNode } from "react";
 
-const base =
-  "font-mono text-eyebrow uppercase tracking-[0.1em] text-bronze";
-
+/**
+ * Section label. Applied to *every* section heading now — a signal used only
+ * half the time is not a signal. Uppercase at a small size, so it takes
+ * positive tracking rather than the negative tracking large text wants.
+ */
 export function Eyebrow({
   children,
   className = "",
-  block = false,
+  tone = "brand",
 }: {
   children: ReactNode;
   className?: string;
-  /** Render as a block so it can be centered above a section heading. */
-  block?: boolean;
+  tone?: "brand" | "onDark";
 }) {
   return (
-    <span className={`${base} ${block ? "block" : ""} ${className}`}>
+    <p
+      className={`flex items-center gap-2.5 text-eyebrow uppercase ${
+        tone === "brand" ? "text-brand-strong" : "text-white/70"
+      } ${className}`}
+    >
+      <span
+        aria-hidden="true"
+        className={`h-px w-6 flex-none ${
+          tone === "brand" ? "bg-brand-line" : "bg-white/30"
+        }`}
+      />
       {children}
-    </span>
+    </p>
   );
 }

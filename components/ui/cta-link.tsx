@@ -1,40 +1,54 @@
-import type { AnchorHTMLAttributes, ReactNode } from "react";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
 
+/**
+ * Near-black is the action colour, matching the product's own primary button.
+ * Gold stays reserved for identity, the nav bar and accents. It measures only
+ * 3.2:1 on white, so using it as a button fill would put every CTA under the
+ * contrast floor; dark ink keeps them all well clear of it.
+ */
 const variants = {
-  /** Primary action on light surfaces. */
-  gold: "bg-gold text-ink font-semibold hover:bg-gold-hover",
-  /** Secondary action on light surfaces. */
-  ghost:
-    "border border-line-bold text-ink font-medium hover:border-gold hover:bg-cream-warm",
-  /** Primary action on the gold CTA panel. */
-  dark: "bg-ink text-white font-semibold hover:bg-[#332C23]",
-  /** Secondary action on the gold CTA panel. */
-  ghostOnGold: "border border-ink/30 text-ink font-medium hover:bg-ink/10",
+  primary:
+    "bg-surface-inverse text-ink-inverse font-semibold shadow-raised hover:opacity-90",
+  secondary:
+    "border border-line-strong text-ink font-medium hover:border-ink-3 hover:bg-surface-2",
+  /**
+   * For the demo panel, which stays dark in both themes. These deliberately
+   * do NOT use the theme-flipping surface tokens: on that panel a token that
+   * inverts would turn the button dark-on-dark in dark mode.
+   */
+  onDark: "bg-white text-[#17140f] font-semibold shadow-raised hover:bg-white/90",
+  onDarkGhost:
+    "border border-white/25 text-white font-medium hover:bg-white/10 hover:border-white/40",
 } as const;
 
 const sizes = {
-  sm: "h-[42px] px-5 text-[14.5px]",
-  md: "h-[52px] px-7 text-[15.5px]",
-  lg: "h-[54px] px-7 text-[15.5px]",
+  sm: "h-9 px-4 text-xs gap-1.5",
+  md: "h-11 px-5 text-sm gap-2",
+  lg: "h-[3.25rem] px-7 text-body gap-2",
 } as const;
 
-type CtaLinkProps = {
-  href: string;
+const base =
+  "pressable inline-flex items-center justify-center rounded-full whitespace-nowrap select-none";
+
+type Common = {
   children: ReactNode;
   variant?: keyof typeof variants;
   size?: keyof typeof sizes;
   className?: string;
+};
+
+type CtaLinkProps = Common & {
+  href: string;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "className">;
 
 /**
- * Every link on this page is either an in-page anchor or an external
- * destination, so a plain <a> is the right element — `next/link` would only
- * add router work for hash navigation. External targets get safe rel values.
+ * In-page anchors and external destinations only, so a plain <a> is right —
+ * `next/link` would add router work for hash navigation.
  */
 export function CtaLink({
   href,
   children,
-  variant = "gold",
+  variant = "primary",
   size = "md",
   className = "",
   ...props
@@ -45,10 +59,30 @@ export function CtaLink({
     <a
       href={href}
       {...(isExternal ? { rel: "noopener noreferrer" } : {})}
-      className={`inline-flex items-center justify-center rounded-full transition-colors ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >
       {children}
     </a>
+  );
+}
+
+type CtaButtonProps = Common &
+  Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className">;
+
+export function CtaButton({
+  children,
+  variant = "primary",
+  size = "md",
+  className = "",
+  ...props
+}: CtaButtonProps) {
+  return (
+    <button
+      className={`${base} ${variants[variant]} ${sizes[size]} disabled:pointer-events-none disabled:opacity-60 ${className}`}
+      {...props}
+    >
+      {children}
+    </button>
   );
 }

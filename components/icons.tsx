@@ -1,151 +1,202 @@
-import type { ReactNode, SVGProps } from "react";
+import type { SVGProps } from "react";
 
 /**
- * Decorative brand marks used inside the badge chips. They carry no meaning of
- * their own — the adjacent heading is the accessible label — so every icon is
- * hidden from assistive tech.
+ * Line icons drawn on a 24px grid with a 1.6px stroke, inheriting
+ * `currentColor` so they pick up whatever tone the surface sets. They are
+ * decorative — the adjacent heading is always the accessible label — so each
+ * one is hidden from assistive tech.
  */
-type IconProps = Omit<SVGProps<SVGSVGElement>, "children">;
+type IconProps = SVGProps<SVGSVGElement>;
 
-function Svg({
-  size = 22,
-  ...props
-}: IconProps & { size?: number; children: ReactNode }) {
+function Icon({ children, ...props }: IconProps) {
   return (
     <svg
-      width={size}
-      height={size}
-      viewBox="0 0 44 44"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       aria-hidden="true"
       focusable="false"
       {...props}
-    />
+    >
+      {children}
+    </svg>
   );
 }
 
+/* --- Modules ------------------------------------------------------------ */
+
+/** A meeting table with seats — boardroom booking. */
 export function BoardroomIcon(props: IconProps) {
   return (
-    <Svg {...props}>
-      <rect x="6" y="8" width="32" height="14" rx="5" fill="#AF8B56" />
-      <rect x="6" y="26" width="32" height="10" rx="5" fill="#1B1813" opacity=".15" />
-    </Svg>
+    <Icon {...props}>
+      <rect x="3" y="8.5" width="18" height="7" rx="2.5" />
+      <path d="M7 8.5V6.5M17 8.5V6.5M7 17.5v-2M17 17.5v-2M12 6.5v-2M12 19.5v-2" />
+    </Icon>
   );
 }
 
+/** A pass card with a lanyard hole — day passes and visitors. */
 export function PassesIcon(props: IconProps) {
   return (
-    <Svg {...props}>
-      <circle cx="16" cy="20" r="13" fill="#AF8B56" />
-      <rect x="24" y="14" width="16" height="20" rx="5" fill="#1B1813" opacity=".85" />
-    </Svg>
+    <Icon {...props}>
+      <rect x="3" y="5" width="18" height="14" rx="3" />
+      <path d="M3 9.5h18" />
+      <circle cx="8" cy="14" r="1.6" />
+      <path d="M13 13h5M13 16h3" />
+    </Icon>
   );
 }
 
+/** A speech bubble with a ticket tag — helpdesk. */
 export function HelpdeskIcon(props: IconProps) {
   return (
-    <Svg {...props}>
-      <circle cx="16" cy="18" r="12" fill="#AF8B56" />
-      <circle cx="30" cy="28" r="8" fill="#1B1813" opacity=".7" />
-    </Svg>
+    <Icon {...props}>
+      <path d="M20 13.5a3 3 0 0 1-3 3H9l-4.5 3.5v-3.5a3 3 0 0 1-1-2.2V7a3 3 0 0 1 3-3h10.5a3 3 0 0 1 3 3z" />
+      <path d="M8.5 8.5h7M8.5 12h4.5" />
+    </Icon>
   );
 }
 
+/** A document with a signature line — templates and e-signatures. */
 export function DocumentsIcon(props: IconProps) {
   return (
-    <Svg {...props}>
-      <rect x="10" y="6" width="24" height="30" rx="4" fill="#1B1813" opacity=".12" />
-      <rect x="14" y="12" width="24" height="26" rx="4" fill="#AF8B56" />
-    </Svg>
+    <Icon {...props}>
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+      <path d="M14 3v5h5" />
+      <path d="M8.5 16.5c1.2-1.8 2-1.8 3 0s1.8 1.2 4-1.5" />
+    </Icon>
   );
 }
 
+/** Stacked boxes — inventory and stock transfer. */
 export function InventoryIcon(props: IconProps) {
   return (
-    <Svg {...props}>
-      <rect
-        x="10"
-        y="10"
-        width="20"
-        height="20"
-        rx="3"
-        fill="#AF8B56"
-        transform="rotate(45 20 20)"
-      />
-      <circle cx="32" cy="30" r="7" fill="#1B1813" opacity=".7" />
-    </Svg>
+    <Icon {...props}>
+      <path d="M3 8.2 12 3.5l9 4.7v7.6L12 20.5 3 15.8z" />
+      <path d="M3 8.2 12 13l9-4.8M12 13v7.5" />
+    </Icon>
   );
 }
 
+/** A receipt with a currency row — billing and invoicing. */
 export function BillingIcon(props: IconProps) {
   return (
-    <Svg {...props}>
-      <rect x="6" y="12" width="30" height="20" rx="6" fill="#AF8B56" />
-      <circle cx="34" cy="14" r="8" fill="#1B1813" opacity=".85" />
-    </Svg>
+    <Icon {...props}>
+      <path d="M5 3.5h14v17l-2.3-1.6-2.3 1.6-2.4-1.6-2.3 1.6-2.4-1.6L5 20.5z" />
+      <path d="M9 8.5h6M9 12.5h6" />
+    </Icon>
   );
 }
 
-export function UnifyIcon(props: IconProps) {
-  return (
-    <Svg size={24} {...props}>
-      <rect x="8" y="8" width="28" height="28" rx="8" fill="#AF8B56" opacity=".2" />
-      <circle cx="22" cy="22" r="10" fill="#AF8B56" />
-    </Svg>
-  );
-}
+/* --- Trust -------------------------------------------------------------- */
 
-export function SelfServeIcon(props: IconProps) {
-  return (
-    <Svg size={24} {...props}>
-      <circle cx="16" cy="16" r="10" fill="#AF8B56" />
-      <rect x="22" y="22" width="16" height="16" rx="5" fill="#1B1813" opacity=".8" />
-    </Svg>
-  );
-}
-
-export function AuditGoldIcon(props: IconProps) {
-  return (
-    <Svg size={24} {...props}>
-      <rect x="10" y="8" width="24" height="28" rx="4" fill="#AF8B56" />
-      <rect x="16" y="16" width="12" height="3" fill="#1B1813" opacity=".5" />
-      <rect x="16" y="22" width="12" height="3" fill="#1B1813" opacity=".5" />
-    </Svg>
-  );
-}
-
+/** Two separated containers — per-tenant data isolation. */
 export function IsolationIcon(props: IconProps) {
   return (
-    <Svg {...props}>
-      <circle cx="14" cy="20" r="11" fill="#AF8B56" opacity=".9" />
-      <circle cx="28" cy="20" r="11" fill="#EBD6AE" opacity=".35" />
-    </Svg>
+    <Icon {...props}>
+      <rect x="2.75" y="6" width="7.5" height="12" rx="2.5" />
+      <rect x="13.75" y="6" width="7.5" height="12" rx="2.5" />
+      <path d="M12 3.5v17" strokeDasharray="2 2.6" />
+    </Icon>
   );
 }
 
+/** A person behind a key — roles and permissions. */
 export function RolesIcon(props: IconProps) {
   return (
-    <Svg {...props}>
-      <rect x="8" y="20" width="8" height="14" rx="3" fill="#AF8B56" />
-      <rect x="18" y="12" width="8" height="22" rx="3" fill="#EBD6AE" />
-      <rect x="28" y="24" width="8" height="10" rx="3" fill="#AF8B56" opacity=".6" />
-    </Svg>
+    <Icon {...props}>
+      <circle cx="9" cy="8" r="3.25" />
+      <path d="M3.5 19.5a5.5 5.5 0 0 1 9.4-3.9" />
+      <circle cx="16.75" cy="15.75" r="2.25" />
+      <path d="M18.4 17.4 21 20l-1.2 1.2" />
+    </Icon>
   );
 }
 
-export function AuditDarkIcon(props: IconProps) {
+/** A list under a clock — every change logged with actor and timestamp. */
+export function AuditIcon(props: IconProps) {
   return (
-    <Svg {...props}>
-      <rect x="10" y="6" width="24" height="30" rx="4" fill="#EBD6AE" opacity=".2" />
-      <rect x="14" y="10" width="24" height="28" rx="4" fill="#AF8B56" />
-    </Svg>
+    <Icon {...props}>
+      <path d="M19 10.5V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h5.5" />
+      <path d="M7.5 8.5h8M7.5 12h5" />
+      <circle cx="17" cy="16.5" r="4.5" />
+      <path d="M17 14.5v2.2l1.4 1" />
+    </Icon>
   );
 }
+
+/* --- Interface ---------------------------------------------------------- */
+
+export function MenuIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4 8h16M4 16h16" />
+    </Icon>
+  );
+}
+
+export function CloseIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M6 6l12 12M18 6 6 18" />
+    </Icon>
+  );
+}
+
+export function CheckIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="m4.5 12.5 5 5 10-11" />
+    </Icon>
+  );
+}
+
+export function ArrowRightIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4.5 12h15M13 5.5l6.5 6.5-6.5 6.5" />
+    </Icon>
+  );
+}
+
+export function SunIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="4.2" />
+      <path d="M12 2.5v2M12 19.5v2M4.2 4.2l1.5 1.5M18.3 18.3l1.5 1.5M2.5 12h2M19.5 12h2M4.2 19.8l1.5-1.5M18.3 5.7l1.5-1.5" />
+    </Icon>
+  );
+}
+
+export function MoonIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.4 8.4 0 1 0 10.2 10.2z" />
+    </Icon>
+  );
+}
+
+export function AlertIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7.5v5.5M12 16.2v.1" />
+    </Icon>
+  );
+}
+
+/* --- Stores ------------------------------------------------------------- */
 
 export function AppleIcon(props: IconProps) {
   return (
     <svg
-      width="15"
-      height="18"
+      width="16"
+      height="19"
       viewBox="0 0 15 18"
       fill="currentColor"
       aria-hidden="true"
@@ -160,8 +211,8 @@ export function AppleIcon(props: IconProps) {
 export function GooglePlayIcon(props: IconProps) {
   return (
     <svg
-      width="15"
-      height="17"
+      width="16"
+      height="18"
       viewBox="0 0 15 17"
       fill="currentColor"
       aria-hidden="true"

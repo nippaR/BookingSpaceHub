@@ -1,73 +1,86 @@
 import { Wordmark } from "@/components/wordmark";
 import { footerColumns, site } from "@/lib/site-content";
 
-const columnTitle =
-  "mb-3 font-mono text-[10.5px] tracking-[0.1em] uppercase text-faint";
-const footerLink = "text-ink-soft transition-colors hover:text-ink";
+/**
+ * Every tone here now clears 4.5:1 — the previous footer set its column
+ * titles in 10.5px `text-faint`, which measured 2.6:1 on white.
+ *
+ * The Privacy and Terms links are deliberately absent rather than pointing at
+ * `#top` as they did before: dead legal links on a page selling audit trails
+ * cost more trust than the labels earn. Add them back when the pages exist.
+ */
+/**
+ * Rendered as <p>, not <h2>. Each column is already a <nav> with an
+ * `aria-label`, so promoting these labels into the heading outline added
+ * three document-level sections that do not exist.
+ */
+const columnTitle = "mb-4 text-eyebrow uppercase text-ink-3";
+const footerLink =
+  "pressable-subtle inline-block rounded text-ink-2 hover:text-ink";
 
 export function SiteFooter() {
   return (
-    <footer className="px-gutter pt-[clamp(28px,4vw,44px)] pb-[30px]">
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-7 border-b border-line pb-[26px]">
-        <div>
-          <div className="mb-3 text-[19px]">
-            <Wordmark size="sm" />
+    <footer className="border-t border-line px-gutter pt-14 pb-10">
+      <div className="mx-auto max-w-page">
+        <div className="grid gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <div className="text-[1.0625rem]">
+              <Wordmark size="sm" />
+            </div>
+            <p className="mt-4 max-w-[16rem] text-sm text-ink-3 text-pretty">
+              Co-Working Management System. Multi-tenant software for workspace
+              operators.
+            </p>
           </div>
-          <p className="max-w-[230px] text-[13.5px] leading-[1.6] text-muted">
-            Co-Working Management System. Multi-tenant software for workspace
-            operators.
-          </p>
-        </div>
 
-        {footerColumns.map((column) => (
-          <nav key={column.title} aria-label={column.title}>
-            <h2 className={columnTitle}>{column.title}</h2>
-            <ul className="grid gap-[9px] text-[14px]">
-              {column.links.map((link) => (
-                <li key={link.label}>
-                  <a
-                    href={link.href}
-                    {...(link.href.startsWith("http")
-                      ? { rel: "noopener noreferrer" }
-                      : {})}
-                    className={footerLink}
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
+          {footerColumns.map((column) => (
+            <nav key={column.title} aria-label={column.title}>
+              <p className={columnTitle}>{column.title}</p>
+              <ul className="grid gap-3 text-sm">
+                {column.links.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      {...(link.href.startsWith("http")
+                        ? { rel: "noopener noreferrer" }
+                        : {})}
+                      className={footerLink}
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+
+          <div>
+            <p className={columnTitle}>Get in touch</p>
+            <ul className="grid gap-3 text-sm">
+              <li>
+                <a href={`mailto:${site.salesEmail}`} className={footerLink}>
+                  {site.salesEmail}
+                </a>
+              </li>
+              <li>
+                <a href={site.phone.href} className={footerLink}>
+                  {site.phone.display}
+                </a>
+              </li>
+              <li className="text-ink-3">{site.location}</li>
             </ul>
-          </nav>
-        ))}
-
-        <div>
-          <h2 className={columnTitle}>Get in touch</h2>
-          <ul className="grid gap-[9px] text-[14px] text-ink-soft">
-            <li>
-              <a href={`mailto:${site.salesEmail}`} className={footerLink}>
-                {site.salesEmail}
-              </a>
-            </li>
-            <li>
-              <a href={site.phone.href} className={footerLink}>
-                {site.phone.display}
-              </a>
-            </li>
-            <li>{site.location}</li>
-          </ul>
+          </div>
         </div>
-      </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 pt-[18px] text-[13px] text-faint">
-        <span>© {new Date().getFullYear()} CWMS. All rights reserved.</span>
-        <span className="flex gap-5">
-          <a href="#top" className="text-faint transition-colors hover:text-ink-soft">
-            Privacy
+        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-line pt-8 text-xs text-ink-3">
+          <span>© {new Date().getFullYear()} CWMS. All rights reserved.</span>
+          <a
+            href="#top"
+            className="pressable-subtle rounded text-ink-3 hover:text-ink"
+          >
+            Back to top
           </a>
-          <a href="#top" className="text-faint transition-colors hover:text-ink-soft">
-            Terms
-          </a>
-        </span>
+        </div>
       </div>
     </footer>
   );

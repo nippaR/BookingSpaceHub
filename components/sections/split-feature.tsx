@@ -10,60 +10,73 @@ type Point = {
 };
 
 /**
- * Copy on one side, product screenshot on the other. Both feature sections on
- * the page are the same layout mirrored, so they share this component.
+ * Copy on one side, product screenshot on the other.
+ *
+ * The grid stays a single column until `lg`. The previous
+ * `auto-fit/minmax(360px)` version had two failure modes: on a 375px phone
+ * the 360px track floor forced horizontal page scroll, and at ~900px it
+ * engaged two columns that squeezed a dense dashboard screenshot into 391px
+ * of unreadable texture. An explicit breakpoint fixes both.
  */
 export function SplitFeature({
   id,
   eyebrow,
   heading,
+  body,
   points,
   image,
   imageAlt,
   imageFirst = false,
-  darkChrome = false,
   className = "",
 }: {
   id?: string;
   eyebrow: string;
   heading: string;
+  body?: string;
   points: readonly Point[];
   image: StaticImageData;
   imageAlt: string;
   imageFirst?: boolean;
-  darkChrome?: boolean;
   className?: string;
 }) {
-  const copy = (
-    <Reveal key="copy" delay={imageFirst ? 100 : 0}>
-      <Eyebrow>{eyebrow}</Eyebrow>
-      <h2 className="mt-3.5 mb-4 text-h2">{heading}</h2>
-      <ul className="grid gap-3.5 text-[15px] leading-[1.55] text-ink-soft">
-        {points.map((point) => (
-          <li key={point.title}>
-            <strong className="font-semibold text-ink">{point.title}</strong> —{" "}
-            {point.description}
-          </li>
-        ))}
-      </ul>
-    </Reveal>
-  );
-
-  const figure = (
-    <Reveal key="figure" delay={imageFirst ? 0 : 100}>
-      <BrowserMockup
-        src={image}
-        alt={imageAlt}
-        dark={darkChrome}
-        sizes="(min-width: 1180px) 550px, (min-width: 780px) 50vw, 100vw"
-      />
-    </Reveal>
-  );
-
   return (
     <section id={id} className={`px-gutter py-section ${className}`}>
-      <div className="mx-auto grid max-w-[1180px] grid-cols-[repeat(auto-fit,minmax(360px,1fr))] items-center gap-split-gap">
-        {imageFirst ? [figure, copy] : [copy, figure]}
+      <div className="mx-auto grid max-w-page items-center gap-x-16 gap-y-12 lg:grid-cols-2">
+        <Reveal className={imageFirst ? "lg:order-2" : undefined}>
+          <Eyebrow>{eyebrow}</Eyebrow>
+          <h2 className="mt-5 text-h2">{heading}</h2>
+          {body ? (
+            <p className="mt-4 max-w-[34rem] text-lead text-ink-2">{body}</p>
+          ) : null}
+
+          <ul className="mt-8 grid gap-5">
+            {points.map((point) => (
+              <li key={point.title} className="flex gap-3.5">
+                <span
+                  aria-hidden="true"
+                  className="mt-2.5 size-1.5 flex-none rounded-full bg-brand"
+                />
+                <p className="text-body text-ink-2">
+                  <strong className="font-semibold text-ink">
+                    {point.title}
+                  </strong>{" "}
+                  — {point.description}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+
+        <Reveal
+          delay={90}
+          className={imageFirst ? "lg:order-1" : undefined}
+        >
+          <BrowserMockup
+            src={image}
+            alt={imageAlt}
+            sizes="(min-width: 64rem) 560px, 92vw"
+          />
+        </Reveal>
       </div>
     </section>
   );
