@@ -1,28 +1,33 @@
+import Image from "next/image";
+
+import logo from "@/public/cwms-logo.png";
 import { site } from "@/lib/site-content";
 
 /**
- * CWMS logotype — the gold tile plus the name, sized by the parent.
+ * CWMS logotype — the real lockup: the gold glyph plus the "CWMS ERP" name.
  *
- * The tile is the one place the brand colour is used as a full-strength fill,
- * which is what keeps it reading as identity rather than decoration. It sits
- * on light surfaces everywhere it appears, so a single treatment covers the
- * header and the footer.
+ * The asset is a transparent PNG rather than the source JPEG on purpose: the
+ * header sits on translucent glass, so a baked-in white ground would read as a
+ * pale rectangle floating over whatever is scrolling underneath it.
+ *
+ * Height is the only dimension set — width follows the ratio — so the two call
+ * sites stay in step with the lockup itself if the artwork is ever re-cut.
  */
-export function Wordmark({ size = "md" }: { size?: "sm" | "md" }) {
-  const tile =
-    size === "sm"
-      ? "size-6 rounded-[0.4375rem] text-[0.75rem]"
-      : "size-7 rounded-lg text-[0.875rem]";
-
+export function Wordmark({
+  size = "md",
+  priority = false,
+}: {
+  size?: "sm" | "md";
+  priority?: boolean;
+}) {
   return (
-    <span className="inline-flex items-center gap-2 font-extrabold tracking-[-0.03em] text-ink">
-      <span
-        className={`inline-flex items-center justify-center bg-brand font-bold text-on-brand ${tile}`}
-        aria-hidden="true"
-      >
-        C
-      </span>
-      {site.name}
-    </span>
+    <Image
+      src={logo}
+      alt={`${site.name} ERP`}
+      className={size === "sm" ? "h-[1.375rem] w-auto" : "h-7 w-auto"}
+      // The header mark is above the fold and small enough that deferring it
+      // only buys a visible pop-in.
+      priority={priority}
+    />
   );
 }

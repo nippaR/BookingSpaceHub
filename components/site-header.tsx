@@ -85,10 +85,10 @@ export function SiteHeader() {
         >
           <a
             href="#top"
-            className="pressable-subtle -m-1 rounded-lg p-1 text-[1.0625rem]"
+            className="pressable-subtle -m-1 flex rounded-lg p-1"
             aria-label={`${site.name} — back to top`}
           >
-            <Wordmark />
+            <Wordmark priority />
           </a>
 
           {/* The active item is marked by weight plus the underline rather

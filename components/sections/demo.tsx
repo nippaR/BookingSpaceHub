@@ -129,7 +129,7 @@ export function Demo() {
               ))}
             </ul>
 
-            <p className="mt-9 text-sm text-white/60">
+            {/* <p className="mt-9 text-sm text-white/60">
               Prefer email?{" "}
               <a
                 href={site.salesEmail.href}
@@ -137,7 +137,7 @@ export function Demo() {
               >
                 {site.salesEmail.display}
               </a>
-            </p>
+            </p> */}
           </div>
 
           {/* --- Form --- */}

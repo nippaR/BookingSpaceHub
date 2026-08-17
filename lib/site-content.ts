@@ -36,7 +36,6 @@ export const site = {
     display: "sales@cwms.io",
     href: "mailto:meetings@svspaces.co",
   },
-  phone: { display: "+971 4 000 0000", href: "tel:+97140000000" },
   location:"Colombo, Sri Lanka",
 } as const;
 

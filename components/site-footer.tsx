@@ -24,9 +24,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-page">
         <div className="grid gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <div className="text-[1.0625rem]">
-              <Wordmark size="sm" />
-            </div>
+            <Wordmark size="sm" />
             <p className="mt-4 max-w-[16rem] text-sm text-ink-3 text-pretty">
               Co-Working Management System. Multi-tenant software for workspace
               operators.
@@ -62,11 +60,11 @@ export function SiteFooter() {
                   {site.salesEmail.display}
                 </a>
               </li>
-              <li>
+              {/* <li>
                 <a href={site.phone.href} className={footerLink}>
                   {site.phone.display}
                 </a>
-              </li>
+              </li> */}
               <li className="text-ink-3">{site.location}</li>
             </ul>
           </div>
