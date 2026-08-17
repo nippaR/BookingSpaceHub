@@ -14,6 +14,17 @@ import {
 } from "@/lib/demo-form";
 import { site } from "@/lib/site-content";
 
+/**
+ * The native dropdown popup is painted by the OS using the select's own
+ * `background-color`. That is `bg-white/5` here — 5% white over transparent —
+ * so the options rendered as white text on an effectively white popup and
+ * were invisible on Windows. `color-scheme: dark` cannot rescue an explicitly
+ * transparent background, so each <option> carries solid colours of its own.
+ * Inline styles rather than classes: `className` on <option> is ignored by
+ * several browsers.
+ */
+const OPTION_STYLE = { backgroundColor: "#241f19", color: "#f2efe9" };
+
 const promises = [
   "A walkthrough of your actual workflow, not a generic deck",
   "Straight answers on migration and access hardware",
@@ -121,10 +132,10 @@ export function Demo() {
             <p className="mt-9 text-sm text-white/60">
               Prefer email?{" "}
               <a
-                href={`mailto:${site.salesEmail}`}
+                href={site.salesEmail.href}
                 className="font-medium text-white underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white"
               >
-                {site.salesEmail}
+                {site.salesEmail.display}
               </a>
             </p>
           </div>
@@ -187,9 +198,6 @@ export function Demo() {
                   field="locations"
                   error={errorFor("locations")}
                 >
-                  {/* `color-scheme: dark` makes the browser render the native
-                      dropdown popup dark too. Without it the options inherit
-                      white text into a light system popup and vanish. */}
                   <select
                     {...fieldProps("locations")}
                     required
@@ -199,9 +207,11 @@ export function Demo() {
                         "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23ffffff' stroke-opacity='.6' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='m4 6.5 4 4 4-4'/%3E%3C/svg%3E\")",
                     }}
                   >
-                    <option value="">Select a range</option>
+                    <option value="" style={OPTION_STYLE}>
+                      Select a range
+                    </option>
                     {LOCATION_OPTIONS.map((option) => (
-                      <option key={option} value={option}>
+                      <option key={option} value={option} style={OPTION_STYLE}>
                         {option}
                       </option>
                     ))}

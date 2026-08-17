@@ -58,8 +58,8 @@ export function SiteFooter() {
             <p className={columnTitle}>Get in touch</p>
             <ul className="grid gap-3 text-sm">
               <li>
-                <a href={`mailto:${site.salesEmail}`} className={footerLink}>
-                  {site.salesEmail}
+                <a href={site.salesEmail.href} className={footerLink}>
+                  {site.salesEmail.display}
                 </a>
               </li>
               <li>

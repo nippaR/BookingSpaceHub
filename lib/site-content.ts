@@ -23,9 +23,21 @@ export type Feature = {
 export const site = {
   name: "CWMS",
   appUrl: "https://cwms.bookingspacehub.com/",
-  salesEmail: "sales@cwms.io",
+  /**
+   * Display text and link target are deliberately different: the address
+   * shown stays the public-facing one, while mail actually routes to the
+   * meetings inbox. Same `{ display, href }` shape as `phone` below.
+   *
+   * Worth knowing: anyone who copies the visible text by hand, or reads it
+   * over the phone, gets sales@ — only clicking reaches meetings@. If both
+   * should land in the same place, make `display` match.
+   */
+  salesEmail: {
+    display: "sales@cwms.io",
+    href: "mailto:meetings@svspaces.co",
+  },
   phone: { display: "+971 4 000 0000", href: "tel:+97140000000" },
-  location: "Dubai, UAE",
+  location:"Colombo, Sri Lanka",
 } as const;
 
 export const navLinks = [
