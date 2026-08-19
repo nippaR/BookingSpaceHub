@@ -127,8 +127,8 @@ export function SiteHeader() {
             >
               Log in
             </a>
-            <CtaLink href="#demo" size="sm" className="hidden sm:inline-flex">
-              Book a demo
+            <CtaLink href="https://cwms.bookingspacehub.com/register" size="sm" className="hidden sm:inline-flex">
+              Start free trial
             </CtaLink>
 
             <button
@@ -176,12 +176,12 @@ export function SiteHeader() {
 
         <div className="mt-5 grid gap-2.5 border-t border-line pt-5">
           <CtaLink
-            href="#demo"
+            href="https://cwms.bookingspacehub.com/register"
             size="lg"
             onClick={() => setMenuOpen(false)}
             className="w-full"
           >
-            Book a demo
+            Start free trial
           </CtaLink>
           <CtaLink
             href={site.appUrl}

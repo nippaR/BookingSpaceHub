@@ -67,7 +67,7 @@ export function Hero() {
             style={at(170)}
           >
             <CtaLink href="#demo" size="lg">
-              Book a demo
+              Start free trial
             </CtaLink>
             <CtaLink href="#platform" variant="secondary" size="lg">
               See how it works

@@ -33,7 +33,7 @@ export const site = {
    * should land in the same place, make `display` match.
    */
   salesEmail: {
-    display: "sales@cwms.io",
+    display: "hello@cwms.space",
     href: "mailto:meetings@svspaces.co",
   },
   location:"Colombo, Sri Lanka",
@@ -209,7 +209,7 @@ export const footerColumns = [
     title: "Company",
     links: [
       { label: "FAQ", href: "#faq" },
-      { label: "Book a demo", href: "#demo" },
+      { label: "Start free trial", href: "https://cwms.bookingspacehub.com/register" },
       { label: "Tenant login", href: site.appUrl },
     ],
   },
